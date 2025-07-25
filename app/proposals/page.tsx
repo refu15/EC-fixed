@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { ClipboardList, DollarSign, History, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import dayjs from "dayjs"
+import { useState } from "react"
+import { generateTextWithGemini } from "@/lib/gemini"
 
 import { proposals } from "@/lib/sample-proposals"
 
@@ -14,6 +16,22 @@ export default function Proposals() {
     proposals.reduce((acc, p) => acc + p.expectedROI, 0) / proposals.length,
   )
   const pending = proposals.filter((p) => p.status === "pending").length
+  const [aiComment, setAiComment] = useState<{ [id: string]: string }>({})
+  const [loading, setLoading] = useState<{ [id: string]: boolean }>({})
+
+  async function handleAiComment(id: string, title: string, description: string) {
+    setLoading((prev) => ({ ...prev, [id]: true }))
+    setAiComment((prev) => ({ ...prev, [id]: "" }))
+    try {
+      const prompt = `EC施策「${title}」: ${description} の目的・期待効果・実行時の注意点を、経営者向けに200字以内で分かりやすく日本語で解説してください。`
+      const text = await generateTextWithGemini(prompt)
+      setAiComment((prev) => ({ ...prev, [id]: text }))
+    } catch (e) {
+      setAiComment((prev) => ({ ...prev, [id]: "AI解説の生成に失敗しました。" }))
+    } finally {
+      setLoading((prev) => ({ ...prev, [id]: false }))
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -81,13 +99,29 @@ export default function Proposals() {
                     {p.status}
                   </Badge>
                 </CardHeader>
-                <CardContent className="flex justify-between text-sm">
-                  <span>
-                    作成日: {dayjs(p.createdAt).format("YYYY/MM/DD")}
-                  </span>
-                  <span className="font-medium text-green-600">
-                    期待ROI: {p.expectedROI}%
-                  </span>
+                <CardContent className="flex flex-col gap-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>
+                      作成日: {dayjs(p.createdAt).format("YYYY/MM/DD")}
+                    </span>
+                    <span className="font-medium text-green-600">
+                      期待ROI: {p.expectedROI}%
+                    </span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="mt-2 w-fit"
+                    disabled={loading[p.id]}
+                    onClick={() => handleAiComment(p.id, p.title, p.description)}
+                  >
+                    {loading[p.id] ? "AI解説生成中..." : "AI解説を表示"}
+                  </Button>
+                  {aiComment[p.id] && (
+                    <div className="mt-2 p-2 bg-gray-100 rounded text-gray-800 text-xs whitespace-pre-line">
+                      {aiComment[p.id]}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
