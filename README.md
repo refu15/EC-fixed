@@ -1,30 +1,140 @@
-# Ec platform development
+# EC Growth Hub with Referral Intelligence
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+EC事業者の「数字→行動→成果→拡散」の全サイクルを一気通貫で自動化・可視化する新しい成長支援SaaS。
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/uniconversitynect-gmailcoms-projects/v0-ec-platform-development)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/o8lBFZ7qubP)
+## コンセプト・ビジョン
 
-## Overview
+"数字で現状を見て終わり"ではなく、"施策提案→即実行→リアルタイム成果見える化→バイラル拡散まで"をワンストップで支援。
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+**紹介ネットワーク可視化 × クーポン・特典トラッキング × 施策提案型AIダッシュボード**の組み合わせが最大の差別化。
 
-## Deployment
+## 主要機能
 
-Your project is live at:
+### 1. ダッシュボード（コア）
+- 今月/今週の売上、新規顧客数、CVR、平均注文額（API自動取得）
+- KPI対前月比/前週比のグラフ表示
+- AIによる施策提案カード
+- 成果フィードバック：過去施策・紹介経由の売上/顧客数/ROI表示
 
-**[https://vercel.com/uniconversitynect-gmailcoms-projects/v0-ec-platform-development](https://vercel.com/uniconversitynect-gmailcoms-projects/v0-ec-platform-development)**
+### 2. 友達紹介ネットワーク可視化＆管理（コア）
+- 誰が誰をいつ紹介したかを自動トラッキング・記録
+- 紹介ネットワークをグラフ/ツリー/リストで直感的に表示
+- 紹介実績ランキング（トップ紹介者・トップ経路）
+- 管理画面で紹介ネットワークの全履歴検索・エクスポート
 
-## Build your app
+### 3. シンプル紹介インセンティブ管理（Give&Get型・コア）
+- 招待リンク/招待コードの自動発行（LINE/SNSシェア用）
+- 特典（クーポン、ポイント等）の内容設定
+- 紹介発生時に自動で特典を両者に付与
+- 特典利用の履歴管理
 
-Continue building your app on:
+### 4. クーポン/特典管理と効果分析（コア＋拡張）
+- クーポン/特典の一覧・発行/利用履歴
+- クーポンごとの利用率、売上貢献、リピート転換率
+- 伝播経路のネットワーク可視化
+- キャンペーン終了時に成果レポート自動生成
 
-**[https://v0.dev/chat/projects/o8lBFZ7qubP](https://v0.dev/chat/projects/o8lBFZ7qubP)**
+### 5. SNS/LINEワンクリック拡散機能（コア）
+- LINE/主要SNS/メールでのワンクリック紹介
+- 紹介リンクの自動トラッキング
+- 紹介経由参加者への即時特典付与
 
-## How It Works
+### 6. 行動・施策実行履歴と成長フィードバック（コア＋拡張）
+- 施策・紹介・クーポン利用ごとの行動履歴自動記録
+- 実行率・成果・LTV/ROIの可視化
+- トップ施策・トップユーザー/紹介者ランキング
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## 技術スタック
+
+### フロントエンド
+- Next.js 14.1.0 + React 18.2.0 + TypeScript
+- Tailwind CSS + shadcn/ui
+- Recharts（グラフ/ネットワーク可視化用）
+
+### バックエンド/データベース
+- Supabase (PostgreSQL)
+- 顧客・紹介・クーポン/特典・施策履歴の一元管理
+- Row Level Security対応
+
+### 外部サービス連携
+- Shopify/BASE/Stores API（OAuth/Token認証）
+- LINE Messaging API・SNS各種API
+- メール通知用API（SendGrid, SES など）
+
+### 認証
+- NextAuth.js（Google OAuth・メール認証など）
+
+### AI機能
+- Google Gemini API（施策提案、AI解説）
+- コスト削減機能（開発環境100%サンプル応答、本番環境99%サンプル応答）
+
+### インフラ
+- Vercel（CI/CD/プレビュー環境）
+- Sentry/Datadog（障害監視・ログ収集）
+
+## セットアップ
+
+### 環境変数の設定
+```bash
+# .env.local
+NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 依存関係のインストール
+```bash
+npm install
+```
+
+### 開発サーバーの起動
+```bash
+npm run dev
+```
+
+## データベーススキーマ
+
+### 主要テーブル
+- `users` - ユーザー管理
+- `stores` - 店舗情報
+- `referrals` - 紹介履歴
+- `coupons` - クーポン/特典管理
+- `campaigns` - キャンペーン管理
+- `referral_network` - 紹介ネットワーク
+- `usage_logs` - API利用ログ
+- `policy_history` - 施策実行履歴
+
+## コスト削減機能
+
+- **開発環境**: 100%サンプル応答（API呼び出しなし）
+- **本番環境**: 99%サンプル応答、1%実際のGemini API呼び出し
+- **利用制限システム**: プラン別の日次・月次制限
+- **自動フォールバック**: API制限時は自動的にサンプル応答に切り替え
+
+## ターゲットユーザー
+
+Shopify/BASE/Stores.jpを利用する日本の年商1,000万円〜2億円規模のEC事業者・中小オーナー
+
+- 店舗運営や現場業務も兼務する少人数経営者・マネージャー
+- IT/分析専門でなくてもOK
+- 「現場で迷わず使える」「行動まで一気通貫」「口コミも活かして新規集客・リピーター育成」を求める層
+
+## 開発ロードマップ
+
+### Phase 1: MVP（現在）
+- [x] 基本ダッシュボード
+- [x] AI施策提案機能
+- [x] 利用制限システム
+- [ ] 紹介ネットワーク可視化
+- [ ] クーポン管理システム
+- [ ] SNS/LINE連携
+
+### Phase 2: 拡張機能
+- [ ] 外部ECプラットフォーム連携
+- [ ] 高度な分析機能
+- [ ] 自動化機能の強化
+
+### Phase 3: エンタープライズ機能
+- [ ] 多店舗対応
+- [ ] 高度な権限管理
+- [ ] API公開
